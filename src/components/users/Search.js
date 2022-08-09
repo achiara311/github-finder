@@ -1,18 +1,25 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types';
 
 export class Search extends Component {
     state = {
         text: ''
     }
 
+    static propTypes = {
+        searchUsers: PropTypes.func.isRequired
+    };
+
     onSubmit = (e) => {
         e.preventDefault();
-        console.log(this.state.text);
+        this.props.searchUsers(this.state.text); //gonna fire off in app.js and set off the
+        //searchUsers function in the scope of App.js
+        this.setState({ text: '' }) //for clearing form after
     }
 
     onChange = (e) => { //updates component's state with form
         this.setState({ [e.target.name]: e.target.value });
-        //e.target.name (which is made into a key) uses name="myText" on line 19
+        //e.target.name (which is made into a key) uses name="text" on line 24
     }
 
     render() {
