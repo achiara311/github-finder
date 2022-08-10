@@ -3,13 +3,15 @@ import axios from 'axios'
 import Search from './components/users/Search'
 import Navbar from './components/layout/Navbar'
 import Users from './components/users/Users'
+import Alert from './components/layout/Alert'
 import './App.css'
 
 class App extends Component {
   state = {
     users: [],
-    loading: false //true if fetch is still processing and spinner is going
+    loading: false, //true if fetch is still processing and spinner is going
     //false if the data has been fetched and has arrived from api
+    alert: null
   }
   // async componentDidMount() {
   //   this.setState({ loading: true })
@@ -21,22 +23,41 @@ class App extends Component {
   // }
 
   //Search Github Users
-  searchUsers = async text => {
+  searchUsers = async queryText => {
     this.setState({ loading: true });
     const res = await axios.get(
-      `https://api.github.com/search/users?q=${text}&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
+      `https://api.github.com/search/users?q=${queryText}&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
     )
     console.log(res.data.items);
     this.setState({ users: res.data.items, loading: false });
   }
 
+  // Set Alert
+  setAlert = (msg, type) => {
+    this.setState({ alert: { msg: msg, type: type } });
+
+    setTimeout(() => this.setState({ alert: null }), 5000);
+    //sets alert back to null after 5 seconds
+  }
+
+  //clear users from state
+  clearUsers = () => {
+    this.setState({ users: [], loading: false });
+  }
   render() {
+    const { users, loading } = this.state;
     return (
       <div className='App'>
         <Navbar />
         <div className='container'>
-          <Search searchUsers={this.searchUsers} />
-          <Users loading={this.state.loading} users={this.state.users} />
+          <Alert alert={this.state.alert} />
+          <Search
+            searchUsers={this.searchUsers}
+            clearUsers={this.clearUsers}
+            showClear={users.length > 0 ? true : false}
+            setAlert={this.setAlert} />
+
+          <Users loading={loading} users={users} />
         </div>
       </div>
     )
