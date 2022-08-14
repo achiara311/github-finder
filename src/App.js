@@ -13,9 +13,11 @@ class App extends Component {
   state = {
     users: [],
     user: {},
+    repos: [],
     loading: false, //true if fetch is still processing and spinner is going
     //false if the data has been fetched and has arrived from api
     alert: null
+
   }
   // async componentDidMount() {
   //   this.setState({ loading: true })
@@ -55,7 +57,19 @@ class App extends Component {
     );
 
     this.setState({ user: res.data, loading: false });
-  }
+  };
+
+  //Get users repos
+  getUserRepos = async (userName) => {
+    this.setState({ loading: true }); //loading while fetching data
+
+
+    const res = await axios.get(`https://api.github.com/users/${userName}/repos?per_page=5&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID
+      }&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
+    );
+
+    this.setState({ repos: res.data, loading: false });
+  };
 
   //clear users from state
   clearUsers = () => {
@@ -63,7 +77,7 @@ class App extends Component {
   }
 
   render() {
-    const { users, user, loading } = this.state
+    const { users, repos, user, loading } = this.state;
 
     return (
       <Router>
@@ -88,7 +102,13 @@ class App extends Component {
               />
               <Route path='/about' element={<About />} />
               <Route path={'/user/:login'} element={(
-                <User getUser={this.getUser} user={user} loading={loading} />
+                <User
+                  getUser={this.getUser}
+                  user={user}
+                  loading={loading}
+                  getUserRepos={this.getUserRepos}
+                  repos={repos}
+                />
               )} />
             </Routes>
           </div>

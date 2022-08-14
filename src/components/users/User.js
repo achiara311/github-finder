@@ -1,10 +1,11 @@
 
-import React, { Fragment, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
-import Spinner from '../layout/Spinner'
+import React, { Fragment, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import Spinner from '../layout/Spinner';
 import { Link } from 'react-router-dom';
+import Repos from '../repos/Repos';
 
-function User({ getUser, loading, user: { //pulling from api of github user
+function User({ getUser, repos, getUserRepos, loading, user: { //pulling from api of github user
     public_repos,
     public_gists, following,
     followers, blog,
@@ -20,8 +21,12 @@ function User({ getUser, loading, user: { //pulling from api of github user
     //from the current URL that were matched by the route path.
 
     useEffect(() => {
-        getUser(login) //getting login/userName paramater from getUser() in App.js line 90
+        getUser(login)
+        getUserRepos(login) //getting login/userName paramater from getUser() in App.js line 90
     }, []);
+
+
+
 
     if (loading) return <Spinner></Spinner>;
 
@@ -76,6 +81,8 @@ function User({ getUser, loading, user: { //pulling from api of github user
                 <div className='badge badge-light'>Public Repos:{public_repos}</div>
                 <div className='badge badge-dark'>Public Gists:{public_gists}</div>
             </div>
+
+            <Repos repos={repos}/>
         </Fragment>
     </div>
 
